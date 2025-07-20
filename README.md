@@ -172,3 +172,17 @@ A fully automated, end-to-end GitOps pipeline for deploying containerized applic
 
 - Ensure you have the necessary IAM roles and policies set up for IRSA and the Cluster Autoscaler.
 - Customize the `k8s_orchestration.yaml` as needed for your application.
+
+## Contributing
+
+We ❤️ contributions! Please take a look at our [CONTRIBUTING.md](.github/CONTRIBUTING.md) for details on:
+
+- Opening issues  
+- Branching & commit message conventions  
+- How to run tests locally  
+- Our code review process  
+
+By participating, you agree to abide by our [Code of Conduct](CODE_OF_CONDUCT.md).
+
+## License
+This project is licensed under the terms of the MIT license. See [LICENSE](LICENSE) for more information.
