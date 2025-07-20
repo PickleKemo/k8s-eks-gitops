@@ -25,4 +25,14 @@ Describe the tests that you ran to verify your changes. Provide instructions so 
 - [ ] I have made corresponding changes to the documentation
 - [ ] I have added tests that prove my fix is effective or that my feature works
 - [ ] New and existing unit tests pass locally with my changes
+
+## Discussion / Community Insights
+
+Use this section to solicit feedback, surface design considerations, discuss implementation trade-offs, and gather community insights. Feel free to:
+
+- Propose alternatives and ask questions about architecture  
+- Highlight performance, security, or deployment concerns  
+- Share links to related discussions, RFCs or design docs  
+- Call out areas where maintainers should prioritize review  
+- Ask for input on UX, CI/CD workflows or observability dashboards 
 ```
