@@ -1,4 +1,4 @@
-[![CI](https://github.com/your-org/your-repo/actions/workflows/ci.yaml/badge.svg)](https://github.com/your-org/your-repo/actions/workflows/ci.yaml)
+[![CI](https://github.com/PickleKemo/k8s-eks-gitops/actions/workflows/ci.yaml/badge.svg)](https://github.com/your-org/your-repo/actions/workflows/ci.yaml)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
 [![Argo CD Application Status](https://img.shields.io/badge/ArgoCD-Synced-brightgreen.svg)](https://argocd.example.com/applications/my-app)
 [![Trivy Vulnerabilities](https://img.shields.io/badge/Trivy-Security_passed-brightgreen.svg)](https://github.com/your-org/your-repo/actions/workflows/ci.yaml)
