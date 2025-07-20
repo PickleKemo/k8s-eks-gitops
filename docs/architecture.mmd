@@ -1,0 +1,37 @@
+```mermaid
+flowchart TB
+  subgraph External
+    User["User (Browser/Client)"]
+  end
+
+  subgraph Kubernetes_Cluster["Kubernetes Cluster"]
+    direction TB
+    IngressCtrl["Ingress Controller"]
+    Service["ClusterIP Service"]
+    Deployment["Deployment (Pods)"]
+    SecretMgmt["Secrets / SealedSecrets"]
+    HPA["Horizontal Pod Autoscaler"]
+    PromSM["Prometheus ServiceMonitor"]
+    CA["Cluster Autoscaler"]
+  end
+
+  subgraph Monitoring_UI
+    Grafana["Grafana Dashboard"]
+  end
+
+  User --> IngressCtrl
+  IngressCtrl --> Service
+  Service --> Deployment
+
+  SecretMgmt --> Deployment
+
+  Deployment -->|" /metrics"| PromSM
+  PromSM --> Grafana
+  Deployment -->|"CPU metrics"| HPA
+  HPA --> Deployment
+  CA -.-> Deployment
+  CA -.-> IngressCtrl
+
+  classDef cluster fill:#f9f,stroke:#333,stroke-width:2px;
+  class Kubernetes_Cluster cluster;
+```
