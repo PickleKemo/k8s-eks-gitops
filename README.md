@@ -8,7 +8,7 @@
 # EKS GitOps Deployment
 
 **EKS GitOps Deployment**  
-A fully automated, end-to-end GitOps pipeline for deploying containerized applications on Amazon EKS. This project uses **GitHub Actions** for continuous integration—building, testing, scanning, and publishing Docker images to ECR—and **Argo CD** for declarative, self-healing continuous delivery. Kustomize overlays keep your manifests DRY, while Prometheus and Grafana provide real-time monitoring and autoscaling via HPA and the Cluster Autoscaler. Secrets are managed securely (KMS-encrypted Kubernetes Secrets, SealedSecrets or ExternalSecrets), and the entire workflow is locked down with AWS IRSA, Kubernetes RBAC, Pod Security Admission, network policies, and best-practice CIS benchmarking.
+A fully automated, end-to-end GitOps pipeline for deploying containerized applications on Amazon EKS. This project uses **GitHub Actions** for continuous integration building, testing, scanning, and publishing Docker images to ECR and **Argo CD** for declarative, self-healing continuous delivery. Kustomize overlays keep your manifests DRY, while Prometheus and Grafana provide real-time monitoring and autoscaling via HPA and the Cluster Autoscaler. Secrets are managed securely (KMS-encrypted Kubernetes Secrets, SealedSecrets or ExternalSecrets), and the entire workflow is locked down with AWS IRSA, Kubernetes RBAC, Pod Security Admission, network policies, and best-practice CIS benchmarking.
 
 ## Repository Structure
 
@@ -56,6 +56,119 @@ A fully automated, end-to-end GitOps pipeline for deploying containerized applic
 
 5. **Push Changes**  
    Any changes to `app/` code or `infra/overlays/prod` manifests will automatically trigger CI and CD pipelines.
+
+## IAM Roles and Policies
+
+# IAM Roles and Policies for IRSA and Cluster Autoscaler
+
+## 1. IRSA Role for Your Application
+
+### a) Trust Policy
+```json
+{
+  "Version": "2012-10-17",
+  "Statement": [{
+    "Effect": "Allow",
+    "Principal": {
+      "Federated": "arn:aws:iam::123456789012:oidc-provider/oidc.eks.us-east-1.amazonaws.com/id/EXAMPLED539D4633E53DE1B716D3041E"
+    },
+    "Action": "sts:AssumeRoleWithWebIdentity",
+    "Condition": {
+      "StringEquals": {
+        "oidc.eks.us-east-1.amazonaws.com/id/EXAMPLED539D4633E53DE1B716D3041E:sub": "system:serviceaccount:my-app:my-app-sa"
+      }
+    }
+  }]
+}
+
+### b) Permissions Policy
+
+```json
+{
+  "Version": "2012-10-17",
+  "Statement": [
+    {
+      "Effect": "Allow",
+      "Action": [
+        "s3:GetObject",
+        "s3:ListBucket"
+      ],
+      "Resource": [
+        "arn:aws:s3:::my-app-bucket",
+        "arn:aws:s3:::my-app-bucket/*"
+      ]
+    },
+    {
+      "Effect": "Allow",
+      "Action": [
+        "secretsmanager:GetSecretValue"
+      ],
+      "Resource": [
+        "arn:aws:secretsmanager:us-east-1:123456789012:secret:my-db-credentials-*"
+      ]
+    }
+  ]
+}
+
+## 2. IAM Role for Cluster Autoscaler
+
+### a) Trust Policy
+```json
+{
+  "Version": "2012-10-17",
+  "Statement": [{
+    "Effect": "Allow",
+    "Principal": {
+      "Federated": "arn:aws:iam::123456789012:oidc-provider/oidc.eks.us-east-1.amazonaws.com/id/EXAMPLED539D4633E53DE1B716D3041E"
+    },
+    "Action": "sts:AssumeRoleWithWebIdentity",
+    "Condition": {
+      "StringEquals": {
+        "oidc.eks.us-east-1.amazonaws.com/id/EXAMPLED539D4633E53DE1B716D3041E:sub": "system:serviceaccount:kube-system:cluster-autoscaler"
+      }
+    }
+  }]
+}
+
+### b) Permissions Policy
+```json
+{
+  "Version": "2012-10-17",
+  "Statement": [
+    {
+      "Effect": "Allow",
+      "Action": [
+        "autoscaling:DescribeAutoScalingGroups",
+        "autoscaling:DescribeAutoScalingInstances",
+        "autoscaling:DescribeLaunchConfigurations",
+        "autoscaling:DescribeTags",
+        "autoscaling:SetDesiredCapacity",
+        "autoscaling:TerminateInstanceInAutoScalingGroup"
+      ],
+      "Resource": "*"
+    },
+    {
+      "Effect": "Allow",
+      "Action": [
+        "ec2:DescribeInstanceTypes",
+        "ec2:DescribeLaunchTemplateVersions",
+        "ec2:DescribeAvailabilityZones",
+        "ec2:CreateFleet",
+        "ec2:RunInstances",
+        "ec2:TerminateInstances"
+      ],
+      "Resource": "*"
+    }
+  ]
+}
+
+## Usage
+
+### 1. Replace 123456789012 and the OIDC provider ARN with your AWS Account ID and EKS OIDC provider ARN.
+
+### 2. Apply the trust policy and attach the permissions policy when creating each IAM role in AWS.
+
+### 3. Annotate the corresponding Kubernetes ServiceAccounts with the new role ARNs.
 
 ## Notes
 
