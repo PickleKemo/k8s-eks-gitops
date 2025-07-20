@@ -57,13 +57,11 @@ A fully automated, end-to-end GitOps pipeline for deploying containerized applic
 5. **Push Changes**  
    Any changes to `app/` code or `infra/overlays/prod` manifests will automatically trigger CI and CD pipelines.
 
-## IAM Roles and Policies
+## IAM Roles and Policies for IRSA and Cluster Autoscaler
 
-# IAM Roles and Policies for IRSA and Cluster Autoscaler
+### 1. IRSA Role for Your Application
 
-## 1. IRSA Role for Your Application
-
-### a) Trust Policy
+##### a)Trust Policy
 ```json
 {
   "Version": "2012-10-17",
@@ -80,9 +78,8 @@ A fully automated, end-to-end GitOps pipeline for deploying containerized applic
     }
   }]
 }
-
-### b) Permissions Policy
-
+```
+#### b) Permissions Policy
 ```json
 {
   "Version": "2012-10-17",
@@ -109,10 +106,10 @@ A fully automated, end-to-end GitOps pipeline for deploying containerized applic
     }
   ]
 }
+```
+### 2. IAM Role for Cluster Autoscaler
 
-## 2. IAM Role for Cluster Autoscaler
-
-### a) Trust Policy
+#### a) Trust Policy
 ```json
 {
   "Version": "2012-10-17",
@@ -129,8 +126,8 @@ A fully automated, end-to-end GitOps pipeline for deploying containerized applic
     }
   }]
 }
-
-### b) Permissions Policy
+```
+#### b) Permissions Policy
 ```json
 {
   "Version": "2012-10-17",
@@ -161,14 +158,15 @@ A fully automated, end-to-end GitOps pipeline for deploying containerized applic
     }
   ]
 }
+```
 
-## Usage
+### Usage
 
-### 1. Replace 123456789012 and the OIDC provider ARN with your AWS Account ID and EKS OIDC provider ARN.
+1. **Replace 123456789012 and the OIDC provider ARN with your AWS Account ID and EKS OIDC provider ARN.**
 
-### 2. Apply the trust policy and attach the permissions policy when creating each IAM role in AWS.
+2. **Apply the trust policy and attach the permissions policy when creating each IAM role in AWS.**
 
-### 3. Annotate the corresponding Kubernetes ServiceAccounts with the new role ARNs.
+3. **Annotate the corresponding Kubernetes ServiceAccounts with the new role ARNs.**
 
 ## Notes
 
