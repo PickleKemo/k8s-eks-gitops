@@ -171,7 +171,7 @@ A fully automated, end-to-end GitOps pipeline for deploying containerized applic
 ## Notes
 
 - Ensure you have the necessary IAM roles and policies set up for IRSA and the Cluster Autoscaler.
-- Customize the `k8s_orchestration.yaml` as needed for your application.
+- Customize the [GitHub Actions workflow](.github/workflows/ci.yaml) and [`k8s_orchestration.yaml`][k8s_orchestration.yaml]]`k8s_orchestration.yaml` as needed for your application.
 
 ## Contributing
 
