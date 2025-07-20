@@ -1,0 +1,49 @@
+graph TB
+  subgraph Dev_Workflow["Developer Workflow"]
+    direction LR
+    A1["Write Code & Tests"] --> A2["Push to Git (app/ repo)"]
+    A2 --> A3["Open Pull Request"]
+    A3 --> A4["Run Pre-merge Checks (Lint, Unit Tests)"]
+  end
+
+  subgraph CI_Pipeline["GitHub Actions CI"]
+    direction LR
+    B1["Checkout Code"] --> B2["Build Docker Image (git-SHA tag)"]
+    B2 --> B3["Push to ECR"]
+    B3 --> B4["Scan Image with Trivy"]
+    B4 --> B5["Set Kustomize Image Tag in infra/overlays/prod"]
+    B5 --> B6["Auto-commit kustomization.yaml bump to main"]
+  end
+
+  subgraph CD_GitOps["Argo CD GitOps"]
+    direction LR
+    C1["Watch infra/overlays/prod on main"] --> C2["Detect new commit"]
+    C2 --> C3["Sync manifests to EKS"]
+    C3 --> C4["Prune removed resources"]
+    C4 --> C5["Self-heal out-of-band drifts"]
+  end
+
+  subgraph EKS_Runtime["EKS Cluster Runtime"]
+    direction LR
+    D1["Deployment Rollout"] --> D2["Pods & Services"]
+    D2 --> D3["Metrics exposed (/metrics)"]
+    D3 --> D4["Prometheus ServiceMonitor scrape"]
+    D4 --> D5["HPA scales Pods on CPU"]
+    D5 --> D6["Cluster Autoscaler adjusts nodes"]
+  end
+
+  %% Flows between stages
+  A4 --> B1
+  B6 --> C1
+  C5 --> D1
+  D5 --> D6
+
+  %% Styling
+  classDef dev fill:#e3f2fd,stroke:#42a5f5;
+  classDef ci fill:#fff3e0,stroke:#fb8c00;
+  classDef cd fill:#e8f5e9,stroke:#66bb6a;
+  classDef rt fill:#f3e5f5,stroke:#ab47bc;
+  class Dev_Workflow dev;
+  class CI_Pipeline ci;
+  class CD_GitOps cd;
+  class EKS_Runtime rt;
